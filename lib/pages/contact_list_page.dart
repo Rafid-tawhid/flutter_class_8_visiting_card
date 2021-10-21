@@ -1,11 +1,13 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:visiting_card_contact_class5/custom_widget/contact_row_item.dart';
 import 'package:visiting_card_contact_class5/custom_widget/sqlite_helper.dart';
 
 import 'package:visiting_card_contact_class5/models/contact_model.dart';
 import 'package:visiting_card_contact_class5/pages/new_contact_page.dart';
 import 'package:visiting_card_contact_class5/pages/scan_page.dart';
+import 'package:visiting_card_contact_class5/provider/contact_provider.dart';
 
 class ContactListPage extends StatefulWidget {
 
@@ -17,6 +19,15 @@ class ContactListPage extends StatefulWidget {
 
 class _ContactListPageState extends State<ContactListPage> {
 
+  late ContactProvider _provider;
+
+  @override
+  void didChangeDependencies() {
+
+    _provider= Provider.of<ContactProvider>(context);
+    _provider.getAllContacts();
+    super.didChangeDependencies();
+  }
   // void _refresh()
   // {
   //   setState(() {
@@ -35,27 +46,15 @@ class _ContactListPageState extends State<ContactListPage> {
     return Scaffold(
 
       appBar: AppBar(title: Text("Contact List"),),
-      body:FutureBuilder<List<ContactModel>>(
-        future: SQliteHelper.getAllContacts(),
-        builder: (context,snapshot){
-          if(snapshot.hasData) {
-            final contactList=snapshot.data!;
-            return ListView.builder(
-              itemCount: contactList.length,
-              itemBuilder: (context, index) {
-                final contacts = contactList[index];
-                return ContactRowItem(contacts);
-              },
-            );
-          }
-          if(snapshot.hasError)
-            {
-              return Center(child: Text("Error to load Data"));
-            }
-
-          return Center(child: CircularProgressIndicator());
-
-        },
+      body:Center(
+        child: _provider.contactList.isEmpty ? CircularProgressIndicator():
+        ListView.builder(
+          itemCount: _provider.contactList.length,
+          itemBuilder: (context, index) {
+            final contacts = _provider.contactList[index];
+            return ContactRowItem(contacts);
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async{

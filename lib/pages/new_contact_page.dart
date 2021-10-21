@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:visiting_card_contact_class5/custom_widget/sqlite_helper.dart';
 import 'package:visiting_card_contact_class5/models/contact_model.dart';
+import 'package:visiting_card_contact_class5/provider/contact_provider.dart';
 import 'package:visiting_card_contact_class5/utils/helper_function.dart';
 import 'package:visiting_card_contact_class5/utils/utils.dart';
 
@@ -222,7 +224,7 @@ class _NewContactPageState extends State<NewContactPage> {
         print(contact);
 
         // contactList.add(contact);
-      final rowId= await SQliteHelper.insertNewContact(contact);
+      final rowId= await Provider.of<ContactProvider>(context,listen: false).addNewContact(contact);
       if(rowId>0)
         {
           Navigator.pop(context,true);
